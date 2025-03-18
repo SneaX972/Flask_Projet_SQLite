@@ -1,0 +1,21 @@
+<!-- templates/ajouter_livre.html -->
+<html>
+    <head>
+        <title>Ajouter un Livre</title>
+    </head>
+    <body>
+        <h1>Ajouter un nouveau livre</h1>
+        <form method="POST" action="{{ url_for('ajouter_livre') }}">
+            <label for="titre">Titre</label>
+            <input type="text" id="titre" name="titre" required><br><br>
+
+            <label for="auteur">Auteur</label>
+            <input type="text" id="auteur" name="auteur" required><br><br>
+
+            <label for="quantite">Quantité</label>
+            <input type="number" id="quantite" name="quantite" required><br><br>
+
+            <button type="submit">Ajouter</button>
+        </form>
+    </body>
+</html>
