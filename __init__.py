@@ -36,12 +36,19 @@ def dashboard():
         return redirect(url_for('authentification'))
     return render_template('dashboard.html', role=session['role'])
 
-@app.route('/livres')
-def livres():
-    conn = get_db_connection()
-    livres = conn.execute('SELECT * FROM livres').fetchall()
+@app.route('/livres', methods=['POST'])
+def ajouter_livre():
+    titre = request.form['titre']
+    auteur = request.form['auteur']
+    quantite = request.form['quantite']
+
+    conn = sqlite3.connect('bibliotheque.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)', (titre, auteur, quantite))
+    conn.commit()
     conn.close()
-    return render_template('afficher_livres.html', livres=livres)
+
+    return redirect(url_for('afficher_livres'))
 
 @app.route('/ajouter_livre', methods=['GET', 'POST'])
 def ajouter_livre():
