@@ -4,7 +4,7 @@ CREATE TABLE clients (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     nom TEXT NOT NULL,
     prenom TEXT NOT NULL,
-    adresse TEXT NOT NULL
+    adresse TEXT NOT NULL,
 );
 
 
@@ -23,7 +23,7 @@ CREATE TABLE emprunts (
     date_emprunt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_retour TIMESTAMP NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_livre) REFERENCES livres(id) ON DELETE CASCADE
+    FOREIGN KEY (id_livre) REFERENCES livres(id) ON DELETE CASCADE,
 );
 
 DROP TABLE IF EXISTS utilisateurs;
