@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'votre_cle_secrete'
@@ -19,9 +20,9 @@ def authentification():
         username = request.form['username']
         password = request.form['password']
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM utilisateurs WHERE username = ? AND password = ?', (username, password)).fetchone()
+        user = conn.execute('SELECT * FROM utilisateurs WHERE username = ?', (username,)).fetchone()
         conn.close()
-        if user:
+        if user and check_password_hash(user['password'], password):  # Vérification du mot de passe haché
             session['user_id'] = user['id']
             session['role'] = user['role']
             return redirect(url_for('dashboard'))
@@ -48,11 +49,11 @@ def ajouter_livre():
         titre = request.form['titre']
         auteur = request.form['auteur']
         conn = get_db_connection()
-        conn.execute('INSERT INTO livres (titre, auteur) VALUES (?, ?)', (titre, auteur))
+        conn.execute('INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)', (titre, auteur, 1))  # Ajout de quantite
         conn.commit()
         conn.close()
         return redirect(url_for('livres'))
-    return render_template('ajouter_client.html')
+    return render_template('ajouter_livre.html')  # Renommé en ajouter_livre.html
 
 @app.route('/supprimer_livre/<int:id>')
 def supprimer_livre(id):
@@ -67,8 +68,8 @@ def emprunter_livre(id):
     if 'user_id' not in session:
         return redirect(url_for('authentification'))
     conn = get_db_connection()
-    conn.execute('INSERT INTO emprunts (user_id, livre_id) VALUES (?, ?)', (session['user_id'], id))
-    conn.execute('UPDATE livres SET disponible = 0 WHERE id = ?', (id,))
+    conn.execute('INSERT INTO emprunts (id_client, id_livre) VALUES (?, ?)', (session['user_id'], id))  # Utilisation des bons noms de colonnes
+    conn.execute('UPDATE livres SET quantite = quantite - 1 WHERE id = ?', (id,))  # Decrémenter la quantité
     conn.commit()
     conn.close()
     return redirect(url_for('livres'))
@@ -78,8 +79,8 @@ def retourner_livre(id):
     if 'user_id' not in session:
         return redirect(url_for('authentification'))
     conn = get_db_connection()
-    conn.execute('DELETE FROM emprunts WHERE user_id = ? AND livre_id = ?', (session['user_id'], id))
-    conn.execute('UPDATE livres SET disponible = 1 WHERE id = ?', (id,))
+    conn.execute('DELETE FROM emprunts WHERE id_client = ? AND id_livre = ?', (session['user_id'], id))  # Utilisation des bons noms de colonnes
+    conn.execute('UPDATE livres SET quantite = quantite + 1 WHERE id = ?', (id,))  # Incrémenter la quantité
     conn.commit()
     conn.close()
     return redirect(url_for('livres'))
@@ -97,6 +98,15 @@ def utilisateurs():
 def deconnexion():
     session.clear()
     return redirect(url_for('index'))
+
+# Fonction pour créer un utilisateur (exemple, à utiliser lors de la création de l'utilisateur)
+def create_user(username, password, role='utilisateur'):
+    hashed_password = generate_password_hash(password)
+    conn = get_db_connection()
+    conn.execute('INSERT INTO utilisateurs (username, password, role) VALUES (?, ?, ?)', 
+                 (username, hashed_password, role))
+    conn.commit()
+    conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
