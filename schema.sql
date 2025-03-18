@@ -1,17 +1,7 @@
 -- Supprimer les tables si elles existent déjà
-DROP TABLE IF EXISTS clients;
 DROP TABLE IF EXISTS livres;
 DROP TABLE IF EXISTS emprunts;
 DROP TABLE IF EXISTS utilisateurs;
-
--- Création de la table clients
-CREATE TABLE clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    nom TEXT NOT NULL,
-    prenom TEXT NOT NULL,
-    adresse TEXT NOT NULL
-);
 
 -- Création de la table livres
 CREATE TABLE livres (
