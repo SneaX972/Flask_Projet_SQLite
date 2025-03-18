@@ -13,6 +13,7 @@ CREATE TABLE livres (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titre TEXT NOT NULL,
     auteur TEXT NOT NULL,
+    quantite INTEGER NOT NULL CHECK (quantite >= 0)
 );
 
 DROP TABLE IF EXISTS emprunts;
@@ -23,7 +24,7 @@ CREATE TABLE emprunts (
     date_emprunt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_retour TIMESTAMP NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_livre) REFERENCES livres(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_livre) REFERENCES livres(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS utilisateurs;
