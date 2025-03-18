@@ -41,7 +41,7 @@ def livres():
     conn = get_db_connection()
     livres = conn.execute('SELECT * FROM livres').fetchall()
     conn.close()
-    return render_template('read_data.html', livres=livres)
+    return render_template('afficher_livres.html', livres=livres)
 
 @app.route('/ajouter_livre', methods=['GET', 'POST'])
 def ajouter_livre():
