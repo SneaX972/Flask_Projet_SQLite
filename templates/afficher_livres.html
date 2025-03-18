@@ -1,0 +1,30 @@
+<!-- templates/afficher_livres.html -->
+<html>
+    <head>
+        <title>Liste des livres</title>
+    </head>
+    <body>
+        <h1>Liste des livres</h1>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Quantité</th>
+                <th>Actions</th>
+            </tr>
+            {% for livre in livres %}
+            <tr>
+                <td>{{ livre[0] }}</td> <!-- ID -->
+                <td>{{ livre[1] }}</td> <!-- Titre -->
+                <td>{{ livre[2] }}</td> <!-- Auteur -->
+                <td>{{ livre[3] }}</td> <!-- Quantité -->
+                <td>
+                    <a href="{{ url_for('modifier_livre_form', id=livre[0]) }}">Modifier</a> |
+                    <a href="{{ url_for('supprimer_livre', id=livre[0]) }}">Supprimer</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
