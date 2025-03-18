@@ -7,6 +7,7 @@ CREATE TABLE clients (
     adresse TEXT NOT NULL
 );
 
+
 DROP TABLE IF EXISTS livres;
 CREATE TABLE livres (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
