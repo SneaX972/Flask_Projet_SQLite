@@ -125,9 +125,15 @@ def get_client_by_name():
         return jsonify({"message": "Aucun client trouvé"}), 404
 
     clients = [{"id": row[0], "nom": row[1], "email": row[2]} for row in result]
-    
+
+    # Vérification spécifique pour "Nicolas"
+    if client_name.lower() == "nicolas":
+        return jsonify({
+            "message": "Salut Nicolas ! Voici les résultats trouvés :",
+            "clients": clients
+        })
+
     return jsonify(clients)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
