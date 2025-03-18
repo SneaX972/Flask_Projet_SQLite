@@ -82,57 +82,6 @@ if __name__ == "__main__":
   app.run(debug=True)
 
 
-
-
-app = Flask(__name__)
-auth = HTTPBasicAuth()
-
-# Configuration MySQL (à adapter avec tes infos Alwaysdata)
-app.config['MYSQL_HOST'] = 'mysql-sneax.alwaysdata.net'
-app.config['MYSQL_USER'] = 'sneax'
-app.config['MYSQL_PASSWORD'] = '13mai2004'
-app.config['MYSQL_DB'] = 'sneax_base'
-
-mysql = MySQL(app)
-
-# Authentification utilisateur (user/12345)
-users = {
-    "user": "12345"
-}
-
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and users[username] == password:
-        return username
-    return None
-
-# Nouvelle route protégée pour rechercher un client par nom
-@app.route('/fiche_nom/', methods=['GET'])
-@auth.login_required
-def get_client_by_name():
-    client_name = request.args.get('nom')
-
-    if not client_name:
-        return jsonify({"error": "Nom du client requis"}), 400
-
-    cursor = mysql.connection.cursor()
-    query = "SELECT * FROM clients WHERE nom LIKE %s"
-    cursor.execute(query, (f"%{client_name}%",))
-    result = cursor.fetchall()
-    cursor.close()
-
-    if not result:
-        return jsonify({"message": "Aucun client trouvé"}), 404
-
-    clients = [{"id": row[0], "nom": row[1], "email": row[2]} for row in result]
-
-    # Vérification spécifique pour "Nicolas"
-    if client_name.lower() == "nicolas":
-        return jsonify({
-            "message": "Salut Nicolas ! Voici les résultats trouvés :",
-            "clients": clients
-        })
-
     return jsonify(clients)
 
 if __name__ == '__main__':
