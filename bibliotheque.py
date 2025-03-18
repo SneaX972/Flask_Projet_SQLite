@@ -8,7 +8,7 @@ with open('schema.sql') as f:
 cur = connection.cursor()
 
 cur.execute("INSERT INTO utilisateurs (username, password, role) VALUES (?, ?, ?)", ('admin', 'adminpass', 'admin'))
-cur.execute("INSERT INTO utilisateurs (username, password, role) VALUES (?, ?, ?)", ('user1', 'userpass', 'user'))
+cur.execute("INSERT INTO utilisateurs (username, password, role) VALUES (?, ?, ?)", ('user1', 'userpass', 'utilisateur'))
 
 cur.execute("INSERT INTO livres (titre, auteur, disponible) VALUES (?, ?, ?)", ('Orgueil et Préjugés', 'Jane Austen', 1))
 cur.execute("INSERT INTO livres (titre, auteur, disponible) VALUES (?, ?, ?)", ('Le Rouge et le Noir', 'Stendhal', 1))
