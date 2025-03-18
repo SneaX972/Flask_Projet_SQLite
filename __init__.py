@@ -22,7 +22,7 @@ def authentification():
         conn = get_db_connection()
         user = conn.execute('SELECT * FROM utilisateurs WHERE username = ?', (username,)).fetchone()
         conn.close()
-        if user and check_password_hash(user['password'], password):  # Vérification du mot de passe haché
+        if user and user['password'] == password:  # Comparaison du mot de passe en clair
             session['user_id'] = user['id']
             session['role'] = user['role']
             return redirect(url_for('dashboard'))
@@ -98,15 +98,6 @@ def utilisateurs():
 def deconnexion():
     session.clear()
     return redirect(url_for('index'))
-
-# Fonction pour créer un utilisateur (exemple, à utiliser lors de la création de l'utilisateur)
-def create_user(username, password, role='utilisateur'):
-    hashed_password = generate_password_hash(password)
-    conn = get_db_connection()
-    conn.execute('INSERT INTO utilisateurs (username, password, role) VALUES (?, ?, ?)', 
-                 (username, hashed_password, role))
-    conn.commit()
-    conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
