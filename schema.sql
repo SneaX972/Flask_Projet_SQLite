@@ -1,14 +1,19 @@
+-- Supprimer les tables si elles existent déjà
 DROP TABLE IF EXISTS clients;
+DROP TABLE IF EXISTS livres;
+DROP TABLE IF EXISTS emprunts;
+DROP TABLE IF EXISTS utilisateurs;
+
+-- Création de la table clients
 CREATE TABLE clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     nom TEXT NOT NULL,
     prenom TEXT NOT NULL,
-    adresse TEXT NOT NULL,
+    adresse TEXT NOT NULL
 );
 
-
-DROP TABLE IF EXISTS livres;
+-- Création de la table livres
 CREATE TABLE livres (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titre TEXT NOT NULL,
@@ -16,7 +21,7 @@ CREATE TABLE livres (
     quantite INTEGER NOT NULL CHECK (quantite >= 0)
 );
 
-DROP TABLE IF EXISTS emprunts;
+-- Création de la table emprunts
 CREATE TABLE emprunts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_client INTEGER NOT NULL,
@@ -27,7 +32,7 @@ CREATE TABLE emprunts (
     FOREIGN KEY (id_livre) REFERENCES livres(id) ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS utilisateurs;
+-- Création de la table utilisateurs
 CREATE TABLE utilisateurs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -35,5 +40,6 @@ CREATE TABLE utilisateurs (
     role TEXT CHECK (role IN ('admin', 'utilisateur')) NOT NULL DEFAULT 'utilisateur'
 );
 
+-- Création des index sur la table emprunts pour optimiser les recherches
 CREATE INDEX idx_client ON emprunts(id_client);
 CREATE INDEX idx_livre ON emprunts(id_livre);
