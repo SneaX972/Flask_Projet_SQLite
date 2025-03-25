@@ -1,0 +1,109 @@
+/* Styles pour le body et la mise en page générale */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #6e7dff, #ff7d7d);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+}
+
+/* Conteneur principal du formulaire */
+.login-container {
+    background-color: #fff;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 380px;
+    transition: transform 0.3s ease;
+}
+
+/* Effet de translation au survol du conteneur */
+.login-container:hover {
+    transform: translateY(-10px);
+}
+
+/* Titre du formulaire */
+.login-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.5em;
+}
+
+/* Formulaire de saisie */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Labels des champs de formulaire */
+.form-group label {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+/* Champs de saisie */
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+/* Effet de focus sur les champs de saisie */
+.form-group input:focus {
+    border-color: #6e7dff;
+    outline: none;
+}
+
+/* Bouton de connexion */
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    background-color: #6e7dff;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Effet au survol du bouton */
+.btn-login:hover {
+    background-color: #4a5bb0;
+    transform: scale(1.05);
+}
+
+/* Message d'erreur */
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+/* Informations de test (sous le formulaire) */
+.test-info {
+    margin-top: 30px;
+    font-size: 0.9em;
+    text-align: center;
+    color: #777;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+/* Code des informations de test */
+.test-info code {
+    background-color: #f8f8f8;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
