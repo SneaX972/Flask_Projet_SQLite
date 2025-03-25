@@ -1,23 +1,32 @@
 import sqlite3
 
+# Connexion à la base de données spécifique à la bibliothèque
 connection = sqlite3.connect('bibliotheque.db')
 
+# Lecture et exécution du fichier SQL dédié aux livres et emprunts
 with open('schema.sql') as f:
     connection.executescript(f.read())
 
 cur = connection.cursor()
 
-cur.execute("INSERT INTO utilisateurs (username, password, role) VALUES (?, ?, ?)", ('admin', 'adminpass', 'admin'))
-cur.execute("INSERT INTO utilisateurs (username, password, role) VALUES (?, ?, ?)", ('user1', 'userpass', 'utilisateur'))
+# Remplissage initial des livres
+cur.execute("INSERT INTO livres (titre, auteur, genre, disponible) VALUES (?, ?, ?, ?)",
+            ('Le Petit Prince', 'Antoine de Saint-Exupéry', 'Conte philosophique', 'oui'))
 
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ('Orgueil et Préjugés', 'Jane Austen', 1))
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ('Le Rouge et le Noir', 'Stendhal', 1))
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ('1984', 'George Orwell', 1))
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ("L'Étranger", 'Albert Camus', 1))
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ("Jacques La Fatalis", 'Diderot', 1))
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ("Le Petit Prince", 'Antoine de Saint-Exupéry', 1))
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ("Harry Potter à l'école des sorciers", 'J.K. Rowling', 1))
-cur.execute("INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)", ("Les Misérables", 'Victor Hugo', 1))
+cur.execute("INSERT INTO livres (titre, auteur, genre, disponible) VALUES (?, ?, ?, ?)",
+            ('Les Misérables', 'Victor Hugo', 'Roman historique', 'oui'))
+
+cur.execute("INSERT INTO livres (titre, auteur, genre, disponible) VALUES (?, ?, ?, ?)",
+            ('1984', 'George Orwell', 'Science-fiction', 'oui'))
+
+cur.execute("INSERT INTO livres (titre, auteur, genre, disponible) VALUES (?, ?, ?, ?)",
+            ('Harry Potter à l\'école des sorciers', 'J.K. Rowling', 'Fantasy', 'oui'))
+
+cur.execute("INSERT INTO livres (titre, auteur, genre, disponible) VALUES (?, ?, ?, ?)",
+            ('L\'Étranger', 'Albert Camus', 'Roman', 'oui'))
+
+cur.execute("INSERT INTO livres (titre, auteur, genre, disponible) VALUES (?, ?, ?, ?)",
+            ('Voyage au bout de la nuit', 'Louis-Ferdinand Céline', 'Roman', 'oui'))
 
 connection.commit()
 connection.close()
