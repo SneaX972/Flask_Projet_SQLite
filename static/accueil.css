@@ -1,88 +1,116 @@
-/* Général */
+/* Styles généraux du body et du fond */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f7fb;
     margin: 0;
-    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #6e7dff, #ff7d7d); /* Dégradé moderne */
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
 }
 
+/* Conteneur principal de la page d'accueil */
 .container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-header h1 {
-    color: #333;
-    font-size: 36px;
-}
-
-header p {
-    color: #555;
-    font-size: 16px;
-}
-
-/* Liste des livres */
-.books-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    justify-items: center;
-}
-
-.book-item {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.9); /* Fond légèrement transparent */
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
     width: 100%;
-    max-width: 300px;
-    text-align: center;
-    padding: 20px;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease;
 }
 
-.book-item:hover {
-    transform: scale(1.05);
+/* Effet de translation du conteneur */
+.container:hover {
+    transform: translateY(-10px);
 }
 
-.book-item img {
-    width: 100%;
-    border-radius: 5px;
-    height: 200px;
-    object-fit: cover;
-}
-
-.book-item h3 {
-    color: #333;
-    font-size: 22px;
-    margin-top: 15px;
-}
-
-.book-item p {
-    color: #777;
-    font-size: 14px;
-    margin-top: 10px;
+/* Titre principal de la page d'accueil */
+h1 {
+    font-size: 2.5em;
     margin-bottom: 20px;
+    color: #333;
 }
 
-.book-item button {
-    background-color: #4CAF50;
-    color: white;
+/* Texte d'introduction */
+p {
+    font-size: 1.2em;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* Boutons d'action */
+.button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #6e7dff;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
+    border-radius: 30px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.book-item button:hover {
-    background-color: #45a049;
+/* Effet au survol des boutons */
+.button:hover {
+    background-color: #4a5bb0;
+    transform: scale(1.1);
 }
 
+/* Section des fonctionnalités */
+.features {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+}
+
+/* Chaque fonctionnalité */
+.feature {
+    background-color: #fff;
+    color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+/* Effet au survol des fonctionnalités */
+.feature:hover {
+    transform: translateY(-10px);
+}
+
+/* Icônes dans chaque fonctionnalité */
+.feature i {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+/* Texte sous chaque icône */
+.feature h4 {
+    font-size: 1.1em;
+    margin-top: 10px;
+}
+
+/* Section des informations supplémentaires */
+.footer-info {
+    margin-top: 50px;
+    font-size: 1em;
+    color: #777;
+    text-align: center;
+}
+
+/* Lien dans le footer */
+.footer-info a {
+    color: #6e7dff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.footer-info a:hover {
+    text-decoration: underline;
+}
