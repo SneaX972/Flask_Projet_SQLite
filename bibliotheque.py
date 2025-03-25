@@ -7,6 +7,12 @@ connection = sqlite3.connect('bibliotheque.db')
 with open('schema.sql') as f:
     connection.executescript(f.read())
 
+# Ajouter un utilisateur adminn
+cur.execute("""
+INSERT INTO Utilisateurs (Nom, Prenom, Email, Mot_de_passe, Role)
+VALUES (?, ?, ?, ?, ?)
+""", ('Admin', 'Super', 'admin@biblio.com', 'password', 'admin'))
+
 cur = connection.cursor()
 
 # Remplissage initial des livres
