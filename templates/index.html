@@ -1,15 +1,31 @@
-<!-- templates/index.html -->
-<html>
-    <head>
-        <title>Gestion de Bibliothèque</title>
-    </head>
-    <body>
-        <h1>Bienvenue dans la gestion de la bibliothèque</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('ajouter_livre_form') }}">Ajouter un livre</a></li>
-                <li><a href="{{ url_for('afficher_livres') }}">Afficher les livres</a></li>
-            </ul>
-        </nav>
-    </body>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Bibliothèque</title>
+</head>
+<body>
+    <h1>Liste des Livres</h1>
+    <ul>
+        {% for livre in livres %}
+            <li>
+                {{ livre.titre }} - {{ livre.auteur }} 
+                {% if livre.disponible %}
+                    <a href="{{ url_for('emprunter_livre', livre_id=livre.id, utilisateur_id=1) }}">Emprunter</a>
+                {% else %}
+                    <a href="{{ url_for('retourner_livre', livre_id=livre.id) }}">Retourner</a>
+                {% endif %}
+                <a href="{{ url_for('supprimer_livre', id=livre.id) }}">Supprimer</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Ajouter un Livre</h2>
+    <form method="post" action="{{ url_for('ajouter_livre') }}">
+        <input type="text" name="titre" placeholder="Titre" required>
+        <input type="text" name="auteur" placeholder="Auteur" required>
+        <button type="submit">Ajouter</button>
+    </form>
+</body>
 </html>
