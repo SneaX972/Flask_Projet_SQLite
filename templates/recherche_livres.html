@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Emprunter des livres</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='recherche_livres.css') }}">
+</head>
+<body>
+
+
+    <h2>Résultats</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th>Auteur</th>
+            <th>Genre</th>
+            <th>Emprunter</th>
+        </tr>
+        {% for livre in livres %}
+        <tr>
+            <td>{{ livre[0] }}</td>
+            <td>{{ livre[1] }}</td>
+            <td>{{ livre[2] }}</td>
+            <td>{{ livre[3] }}</td>
+            <td>
+                <form action="/emprunter_livre" method="post">
+                    <input type="hidden" name="livre_id" value="{{ livre[0] }}">
+                    ID Client: <input type="number" name="client_id" required>
+                    <button type="submit">Emprunter</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">Aucun livre trouvé.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="/">Retour à l'accueil</a>
+</body>
+</html>
