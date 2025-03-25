@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des utilisateurs</title>
+</head>
+<body>
+    <h2>Ajouter un nouvel utilisateur</h2>
+    <form method="post">
+        Nom : <input type="text" name="nom" required><br>
+        Prénom : <input type="text" name="prenom" required><br>
+        Adresse : <input type="text" name="adresse" required><br>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <h2>Liste des utilisateurs et leurs emprunts</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Date création</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Adresse</th>
+            <th>Livres empruntés</th>
+            <th>Actions</th>
+        </tr>
+        {% for utilisateur, livres_empruntes in utilisateurs_avec_livres %}
+        <tr>
+            <td>{{ utilisateur[0] }}</td>
+            <td>{{ utilisateur[1] }}</td>
+            <td>{{ utilisateur[2] }}</td>
+            <td>{{ utilisateur[3] }}</td>
+            <td>{{ utilisateur[4] }}</td>
+            <td>
+                {% if livres_empruntes %}
+                    <ul>
+                    {% for livre in livres_empruntes %}
+                        <li>{{ livre[0] }}</li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    Aucun emprunt
+                {% endif %}
+            </td>
+            <td>
+                <form action="/supprimer_utilisateur/{{ utilisateur[0] }}" method="post">
+                    <button type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
