@@ -5,10 +5,11 @@
     <title>Tableau de bord</title>
 </head>
 <body>
-    <h1>COUCOU</h1>
+    <h1>Bienvenue</h1>
     {% if role == 'admin' %}
         <p><a href="{{ url_for('livres') }}">Voir les livres</a></p>
         <p><a href="{{ url_for('utilisateurs') }}">Gérer les utilisateurs</a></p>
+        <li><a href="/emprunts">Emprunter un livre</a></li>
     {% endif %}
     <p><a href="{{ url_for('deconnexion') }}">Déconnexion</a></p>
 </body>
