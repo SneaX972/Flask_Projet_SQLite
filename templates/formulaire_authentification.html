@@ -7,28 +7,34 @@
     <style>
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(120deg, #4b6cb7, #182848);
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6e7dff, #ff7d7d);
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            color: #fff;
         }
 
         .login-container {
             background-color: #fff;
             padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 420px;
+            max-width: 380px;
+            transition: transform 0.3s ease;
+        }
+
+        .login-container:hover {
+            transform: translateY(-10px);
         }
 
         .login-container h2 {
-            margin-bottom: 20px;
             text-align: center;
-            color: #2c3e50;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5em;
         }
 
         .form-group {
@@ -36,54 +42,66 @@
         }
 
         .form-group label {
-            display: block;
+            font-size: 0.9em;
+            color: #555;
             margin-bottom: 6px;
-            font-weight: 600;
         }
 
         .form-group input {
             width: 100%;
             padding: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #ccc;
+            font-size: 1em;
             box-sizing: border-box;
+            transition: border-color 0.3s ease;
         }
 
         .form-group input:focus {
-            border-color: #4b6cb7;
+            border-color: #6e7dff;
             outline: none;
         }
 
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background-color: #4b6cb7;
+            padding: 14px;
+            background-color: #6e7dff;
             border: none;
             color: #fff;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .btn-login:hover {
-            background-color: #3a539b;
+            background-color: #4a5bb0;
+            transform: scale(1.05);
         }
 
         .error-message {
             color: #e74c3c;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
         }
 
         .test-info {
-            margin-top: 25px;
+            margin-top: 30px;
             font-size: 0.9em;
             text-align: center;
-            color: #666;
+            color: #777;
             border-top: 1px solid #eee;
             padding-top: 15px;
         }
+
+        .test-info code {
+            background-color: #f8f8f8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
     </style>
 </head>
 <body>
@@ -110,7 +128,7 @@
 
         <div class="test-info">
             <strong>Identifiants de test</strong><br>
-            Email : <code>admin@biblio.com</code><br>
+            Email : <code>test@gmail.com</code><br>
             Mot de passe : <code>password</code>
         </div>
     </div>
