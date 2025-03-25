@@ -1,103 +1,73 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.secret_key = 'votre_cle_secrete'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library.db'
+db = SQLAlchemy(app)
 
-def get_db_connection():
-    conn = sqlite3.connect('bibliotheque.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+# Modèle Livre
+class Livre(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titre = db.Column(db.String(100), nullable=False)
+    auteur = db.Column(db.String(100), nullable=False)
+    disponible = db.Column(db.Boolean, default=True)
+
+# Modèle Utilisateur
+class Utilisateur(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(100), nullable=False)
+
+# Modèle Emprunt
+class Emprunt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    utilisateur_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=False)
+    livre_id = db.Column(db.Integer, db.ForeignKey('livre.id'), nullable=False)
+    utilisateur = db.relationship('Utilisateur', backref=db.backref('emprunts', lazy=True))
+    livre = db.relationship('Livre', backref=db.backref('emprunts', lazy=True))
 
 @app.route('/')
 def index():
-    return redirect(url_for('authentification'))
+    livres = Livre.query.all()
+    return render_template('index.html', livres=livres)
 
-@app.route('/authentification', methods=['GET', 'POST'])
-def authentification():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM utilisateurs WHERE username = ?', (username,)).fetchone()
-        conn.close()
-        if user and user['password'] == password:  # Comparaison du mot de passe en clair
-            session['user_id'] = user['id']
-            session['role'] = user['role']
-            return redirect(url_for('dashboard'))
-        else:
-            return render_template('formulaire_authentification.html', error=True)
-    return render_template('formulaire_authentification.html')
-
-@app.route('/dashboard')
-def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('authentification'))
-    return render_template('dashboard.html', role=session['role'])
-
-@app.route('/livres')
-def livres():
-    conn = get_db_connection()
-    livres = conn.execute('SELECT * FROM livres').fetchall()
-    conn.close()
-    return render_template('afficher_livres.html', livres=livres)
-
-@app.route('/ajouter_livre', methods=['GET', 'POST'])
+@app.route('/ajouter_livre', methods=['POST'])
 def ajouter_livre():
-    if request.method == 'POST':
-        titre = request.form['titre']
-        auteur = request.form['auteur']
-        conn = get_db_connection()
-        conn.execute('INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)', (titre, auteur, 1))  # Ajout de quantite
-        conn.commit()
-        conn.close()
-        return redirect(url_for('livres'))
-    return render_template('ajouter_livre.html')  # Renommé en ajouter_livre.html
+    titre = request.form['titre']
+    auteur = request.form['auteur']
+    nouveau_livre = Livre(titre=titre, auteur=auteur)
+    db.session.add(nouveau_livre)
+    db.session.commit()
+    return redirect(url_for('index'))
 
 @app.route('/supprimer_livre/<int:id>')
 def supprimer_livre(id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM livres WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('livres'))
+    livre = Livre.query.get(id)
+    if livre:
+        db.session.delete(livre)
+        db.session.commit()
+    return redirect(url_for('index'))
 
-@app.route('/emprunter_livre/<int:id>')
-def emprunter_livre(id):
-    if 'user_id' not in session:
-        return redirect(url_for('authentification'))
-    conn = get_db_connection()
-    conn.execute('INSERT INTO emprunts (id_client, id_livre) VALUES (?, ?)', (session['user_id'], id))  # Utilisation des bons noms de colonnes
-    conn.execute('UPDATE livres SET quantite = quantite - 1 WHERE id = ?', (id,))  # Decrémenter la quantité
-    conn.commit()
-    conn.close()
-    return redirect(url_for('livres'))
+@app.route('/emprunter/<int:livre_id>/<int:utilisateur_id>')
+def emprunter_livre(livre_id, utilisateur_id):
+    livre = Livre.query.get(livre_id)
+    utilisateur = Utilisateur.query.get(utilisateur_id)
+    if livre and utilisateur and livre.disponible:
+        livre.disponible = False
+        emprunt = Emprunt(utilisateur_id=utilisateur_id, livre_id=livre_id)
+        db.session.add(emprunt)
+        db.session.commit()
+    return redirect(url_for('index'))
 
-@app.route('/retourner_livre/<int:id>')
-def retourner_livre(id):
-    if 'user_id' not in session:
-        return redirect(url_for('authentification'))
-    conn = get_db_connection()
-    conn.execute('DELETE FROM emprunts WHERE id_client = ? AND id_livre = ?', (session['user_id'], id))  # Utilisation des bons noms de colonnes
-    conn.execute('UPDATE livres SET quantite = quantite + 1 WHERE id = ?', (id,))  # Incrémenter la quantité
-    conn.commit()
-    conn.close()
-    return redirect(url_for('livres'))
-
-@app.route('/utilisateurs')
-def utilisateurs():
-    if 'role' not in session or session['role'] != 'admin':
-        return redirect(url_for('dashboard'))
-    conn = get_db_connection()
-    users = conn.execute('SELECT * FROM utilisateurs').fetchall()
-    conn.close()
-    return render_template('utilisateurs.html', utilisateurs=users)
-
-@app.route('/deconnexion')
-def deconnexion():
-    session.clear()
+@app.route('/retourner/<int:livre_id>')
+def retourner_livre(livre_id):
+    livre = Livre.query.get(livre_id)
+    emprunt = Emprunt.query.filter_by(livre_id=livre_id).first()
+    if livre and emprunt:
+        livre.disponible = True
+        db.session.delete(emprunt)
+        db.session.commit()
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)
