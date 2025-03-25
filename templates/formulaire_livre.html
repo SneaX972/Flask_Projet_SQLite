@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un livre</title>
+</head>
+<body>
+    <h2>Ajouter un nouveau livre</h2>
+    <form method="post">
+        Titre : <input type="text" name="titre" required><br>
+        Auteur : <input type="text" name="auteur" required><br>
+        Genre : <input type="text" name="genre" required><br>
+        Disponible :
+        <select name="disponible">
+            <option value="oui">Oui</option>
+            <option value="non">Non</option>
+        </select><br>
+        <button type="submit">Ajouter</button>
+    </form>
+    <a href="/consultation_livres">Retour à la liste des livres</a>
+</body>
+</html>
