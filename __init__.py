@@ -38,8 +38,10 @@ def dashboard():
 
 @app.route('/livres')
 def livres():
-    conn = get_db_connection()
-    livres = conn.execute('SELECT * FROM livres').fetchall()
+    conn = sqlite3.connect('bibliotheque.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM livres;')
+    livres = cursor.fetchall()
     conn.close()
     return render_template('afficher_livres.html', livres=livres)
 
