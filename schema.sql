@@ -1,35 +1,19 @@
--- Supprimer les tables si elles existent déjà
 DROP TABLE IF EXISTS livres;
-DROP TABLE IF EXISTS emprunts;
-DROP TABLE IF EXISTS utilisateurs;
-
--- Création de la table livres
 CREATE TABLE livres (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titre TEXT NOT NULL,
     auteur TEXT NOT NULL,
-    quantite INTEGER NOT NULL CHECK (quantite >= 0)
+    genre TEXT NOT NULL,
+    disponible TEXT NOT NULL DEFAULT 'oui'
 );
 
--- Création de la table emprunts
+DROP TABLE IF EXISTS emprunts;
 CREATE TABLE emprunts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_client INTEGER NOT NULL,
-    id_livre INTEGER NOT NULL,
-    date_emprunt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_retour TIMESTAMP NULL,
-    FOREIGN KEY (id_client) REFERENCES clients(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_livre) REFERENCES livres(id) ON DELETE CASCADE
+    client_id INTEGER NOT NULL,
+    livre_id INTEGER NOT NULL,
+    date_emprunt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_retour TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (livre_id) REFERENCES livres(id)
 );
-
--- Création de la table utilisateurs
-CREATE TABLE utilisateurs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,  -- Haché en production
-    role TEXT CHECK (role IN ('admin', 'utilisateur')) NOT NULL DEFAULT 'utilisateur'
-);
-
--- Création des index sur la table emprunts pour optimiser les recherches
-CREATE INDEX idx_client ON emprunts(id_client);
-CREATE INDEX idx_livre ON emprunts(id_livre);
