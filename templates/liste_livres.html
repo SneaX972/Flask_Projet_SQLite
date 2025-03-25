@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des livres</title>
+</head>
+<body>
+    <h2>Liste des Livres</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th>Auteur</th>
+            <th>Genre</th>
+            <th>Disponible</th>
+            <th>Actions</th>
+        </tr>
+        {% for livre in livres %}
+        <tr>
+            <td>{{ livre[0] }}</td>
+            <td>{{ livre[1] }}</td>
+            <td>{{ livre[2] }}</td>
+            <td>{{ livre[3] }}</td>
+            <td>{{ livre[4] }}</td>
+            <td>
+                <form action="/supprimer_livre/{{ livre[0] }}" method="post" style="display:inline;">
+                    <button type="submit">Supprimer</button>
+                </form>
+                {% if livre[4] == 'oui' %}
+                <form action="/emprunter_livre" method="post" style="display:inline;">
+                    <input type="hidden" name="livre_id" value="{{ livre[0] }}">
+                    ID Client: <input type="number" name="client_id" required>
+                    <button type="submit">Emprunter</button>
+                </form>
+                {% else %}
+                <form action="/retourner_livre" method="post" style="display:inline;">
+                    <input type="hidden" name="livre_id" value="{{ livre[0] }}">
+                    <button type="submit">Retourner</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="/ajouter_livre">Ajouter un nouveau livre</a>
+</body>
+</html>
