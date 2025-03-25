@@ -4,16 +4,10 @@ import sqlite3
 connection = sqlite3.connect('bibliotheque.db')
 
 # Lecture et exécution du fichier SQL dédié aux livres et emprunts
-with open('schema.sql') as f:
+with open('schema_bibliotheque.sql') as f:
     connection.executescript(f.read())
+
 cur = connection.cursor()
-# Ajouter un utilisateur adminn
-cur.execute("""
-INSERT INTO Utilisateurs (Canta, Nico, Email, Mot_de_passe, Role)
-VALUES (?, ?, ?, ?, ?)
-""", ('Admin', 'Super', 'test@biblio.com', 'password', 'admin'))
-
-
 
 # Remplissage initial des livres
 cur.execute("INSERT INTO livres (titre, auteur, genre, disponible) VALUES (?, ?, ?, ?)",
