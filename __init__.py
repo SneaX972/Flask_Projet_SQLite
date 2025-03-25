@@ -65,27 +65,24 @@ def supprimer_livre(id):
     conn.close()
     return redirect(url_for('livres'))
 
-@app.route('/emprunter_livre/<int:id>')
-def emprunter_livre(id):
-    if 'user_id' not in session:
-        return redirect(url_for('authentification'))
-    conn = get_db_connection()
-    conn.execute('INSERT INTO emprunts (id_client, id_livre) VALUES (?, ?)', (session['user_id'], id))  # Utilisation des bons noms de colonnes
-    conn.execute('UPDATE livres SET quantite = quantite - 1 WHERE id = ?', (id,))  # Decrémenter la quantité
+@app.route('/emprunts', methods=['POST'])
+def emprunter_livre():
+    data = request.get_json()
+    conn = sqlite3.connect('bibliotheque.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO emprunts (id_client, id_livre) VALUES (?, ?)', (data['id_client'], data['id_livre']))
     conn.commit()
     conn.close()
-    return redirect(url_for('livres'))
+    return jsonify({"message": "Livre emprunté avec succès"}), 201
 
-@app.route('/retourner_livre/<int:id>')
+@app.route('/emprunts/<int:id>', methods=['PUT'])
 def retourner_livre(id):
-    if 'user_id' not in session:
-        return redirect(url_for('authentification'))
-    conn = get_db_connection()
-    conn.execute('DELETE FROM emprunts WHERE id_client = ? AND id_livre = ?', (session['user_id'], id))  # Utilisation des bons noms de colonnes
-    conn.execute('UPDATE livres SET quantite = quantite + 1 WHERE id = ?', (id,))  # Incrémenter la quantité
+    conn = sqlite3.connect('bibliotheque.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE emprunts SET date_retour = CURRENT_TIMESTAMP WHERE id = ?', (id,))
     conn.commit()
     conn.close()
-    return redirect(url_for('livres'))
+    return jsonify({"message": "Livre retourné avec succès"})
 
 @app.route('/utilisateurs')
 def utilisateurs():
