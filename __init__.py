@@ -1,102 +1,159 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'votre_cle_secrete'
 
-def get_db_connection():
-    conn = sqlite3.connect('bibliotheque.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+def est_authentifie():
+    return session.get('formulaire_authentification')
+
+def est_admin():
+    return session.get('role') == 'admin'
 
 @app.route('/')
-def index():
-    return redirect(url_for('authentification'))
+def accueil():
+    return render_template('accueil.html')
 
 @app.route('/authentification', methods=['GET', 'POST'])
 def authentification():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = get_db_connection()
-        user = conn.execute('SELECT * FROM utilisateurs WHERE username = ?', (username,)).fetchone()
-        conn.close()
-        if user and user['password'] == password:  # Comparaison du mot de passe en clair
-            session['user_id'] = user['id']
-            session['role'] = user['role']
-            return redirect(url_for('dashboard'))
-        else:
-            return render_template('formulaire_authentification.html', error=True)
-    return render_template('formulaire_authentification.html')
+        email = request.form.get('email')
+        mot_de_passe = request.form.get('mot_de_passe')
 
-@app.route('/dashboard')
-def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('authentification'))
-    return render_template('dashboard.html', role=session['role'])
+        if not email or not mot_de_passe:
+            return render_template('formulaire_authentification.html', error="Veuillez remplir tous les champs.")
 
-@app.route('/livres')
-def livres():
-    conn = sqlite3.connect('bibliotheque.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM livres;')
-    livres = cursor.fetchall()
-    conn.close()
-    return render_template('afficher_livres.html', livres=livres)
+        try:
+            conn = sqlite3.connect('database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM utilisateurs WHERE email = ? AND mot_de_passe = ?", (email, mot_de_passe))
+            utilisateur = cursor.fetchone()
+            conn.close()
 
-@app.route('/ajouter_livre', methods=['GET', 'POST'])
-def ajouter_livre():
-    if request.method == 'POST':
-        titre = request.form['titre']
-        auteur = request.form['auteur']
-        conn = get_db_connection()
-        conn.execute('INSERT INTO livres (titre, auteur, quantite) VALUES (?, ?, ?)', (titre, auteur, 1))  # Ajout de quantite
-        conn.commit()
-        conn.close()
-        return redirect(url_for('livres'))
-    return render_template('ajouter_livre.html')  # Renommé en ajouter_livre.html
+            if utilisateur:
+                session['authentifie'] = True
+                session['role'] = utilisateur[5]
+                session['user_id'] = utilisateur[0]
+                return redirect(url_for('liste_livres'))
+            else:
+                return render_template('formulaire_authentification.html', error="Identifiant ou mot de passe incorrect.")
+        except Exception as e:
+            return render_template('formulaire_authentification.html', error=f"Erreur : {e}")
 
-@app.route('/supprimer_livre/<int:id>')
-def supprimer_livre(id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM livres WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('livres'))
-
-@app.route('/emprunts', methods=['POST'])
-def emprunter_livre():
-    data = request.get_json()
-    conn = sqlite3.connect('bibliotheque.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO emprunts (id_client, id_livre) VALUES (?, ?)', (data['id_client'], data['id_livre']))
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Livre emprunté avec succès"}), 201
-
-@app.route('/emprunts/<int:id>', methods=['PUT'])
-def retourner_livre(id):
-    conn = sqlite3.connect('bibliotheque.db')
-    cursor = conn.cursor()
-    cursor.execute('UPDATE emprunts SET date_retour = CURRENT_TIMESTAMP WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Livre retourné avec succès"})
-
-@app.route('/utilisateurs')
-def utilisateurs():
-    if 'role' not in session or session['role'] != 'admin':
-        return redirect(url_for('dashboard'))
-    conn = get_db_connection()
-    users = conn.execute('SELECT * FROM utilisateurs').fetchall()
-    conn.close()
-    return render_template('utilisateurs.html', utilisateurs=users)
+    return render_template('formulaire_authentification.html', error=False)
 
 @app.route('/deconnexion')
 def deconnexion():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('accueil'))
 
-if __name__ == '__main__':
+@app.route('/liste_livres')
+def liste_livres():
+    if not est_authentifie():
+        return redirect(url_for('authentification'))
+    try:
+        conn = sqlite3.connect('bibliotheque.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM livres WHERE quantite > 0")
+        livres = cursor.fetchall()
+        conn.close()
+        return render_template('liste_livres.html', livres=livres)
+    except Exception as e:
+        return render_template('liste_livres.html', livres=[], message=f"Erreur : {e}")
+
+@app.route('/ajouter_livre', methods=['GET', 'POST'])
+def ajouter_livre():
+    if not est_authentifie() or not est_admin():
+        return redirect(url_for('accueil'))
+
+    if request.method == 'POST':
+        titre = request.form.get('titre')
+        auteur = request.form.get('auteur')
+        annee = request.form.get('annee')
+        quantite = request.form.get('quantite')
+
+        if not titre or not auteur or not annee or not quantite:
+            return render_template('ajouter_livre.html', error="Veuillez remplir tous les champs.")
+
+        try:
+            conn = sqlite3.connect('bibliotheque.db')
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO livres (titre, auteur, annee_publication, quantite) VALUES (?, ?, ?, ?)",
+                           (titre, auteur, annee, quantite))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('liste_livres'))
+        except Exception as e:
+            return render_template('ajouter_livre.html', error=f"Erreur : {e}")
+
+    return render_template('ajouter_livre.html')
+
+@app.route('/supprimer_livre/<int:livre_id>', methods=['POST'])
+def supprimer_livre(livre_id):
+    if not est_authentifie() or not est_admin():
+        return redirect(url_for('accueil'))
+    try:
+        conn = sqlite3.connect('bibliotheque.db')
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM livres WHERE id = ?", (livre_id,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('liste_livres'))
+    except Exception as e:
+        print("Erreur de suppression :", e)
+        return redirect(url_for('liste_livres'))
+
+@app.route('/emprunter_livre/<int:livre_id>', methods=['POST'])
+def emprunter_livre(livre_id):
+    if not est_authentifie():
+        return redirect(url_for('authentification'))
+
+    try:
+        conn = sqlite3.connect('bibliotheque.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT quantite FROM livres WHERE id = ?", (livre_id,))
+        livre = cursor.fetchone()
+
+        if livre and livre[0] > 0:
+            cursor.execute("UPDATE livres SET quantite = quantite - 1 WHERE id = ?", (livre_id,))
+            cursor.execute("INSERT INTO emprunts (user_id, livre_id, date_retour_prevue) VALUES (?, ?, DATE('now', '+14 days'))",
+                           (session['user_id'], livre_id))
+            conn.commit()
+        conn.close()
+        return redirect(url_for('liste_livres'))
+    except Exception as e:
+        print("Erreur emprunt:", e)
+        return redirect(url_for('liste_livres'))
+from flask import jsonify  # Assure-toi que ce soit importé en haut
+
+@app.route('/api/emprunter_livre', methods=['POST'])
+def api_emprunter_livre():
+    data = request.get_json()
+    if not data or 'user_id' not in data or 'livre_id' not in data:
+        return jsonify({"success": False, "error": "Champs requis : user_id et livre_id"}), 400
+
+    user_id = data['user_id']
+    livre_id = data['livre_id']
+
+    try:
+        conn = sqlite3.connect('bibliotheque.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT quantite FROM livres WHERE id = ?", (livre_id,))
+        livre = cursor.fetchone()
+
+        if livre and livre[0] > 0:
+            cursor.execute("UPDATE livres SET quantite = quantite - 1 WHERE id = ?", (livre_id,))
+            cursor.execute("INSERT INTO emprunts (user_id, livre_id, date_retour_prevue) VALUES (?, ?, DATE('now', '+14 days'))",
+                           (user_id, livre_id))
+            conn.commit()
+            conn.close()
+            return jsonify({"success": True, "message": "Livre emprunté avec succès."}), 200
+        else:
+            conn.close()
+            return jsonify({"success": False, "error": "Livre non disponible."}), 400
+
+    except Exception as e:
+        print("Erreur API emprunt :", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+if __name__ == "__main__":
     app.run(debug=True)
