@@ -3,19 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentification</title>
+    <title>Connexion • Bibliothèque en ligne</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(120deg, #4b6cb7, #182848);
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #4b6cb7;
+            outline: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #4b6cb7;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background-color: #3a539b;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .test-info {
+            margin-top: 25px;
+            font-size: 0.9em;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Authentification</h2>
-    {% if error %}
-        <p style="color: red;">Identifiant ou mot de passe incorrect.</p>
-    {% endif %}
-    <form action="{{ url_for('authentification') }}" method="post">
-        <label for="username">Nom d'utilisateur:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="password">Mot de passe:</label><br>
-        <input type="password" id="password" name="password"><br><br>
-        <input type="submit" value="Se connecter">
-    </form>
+    <div class="login-container">
+        <h2>Connexion à la bibliothèque</h2>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('authentification') }}" method="post">
+            <div class="form-group">
+                <label for="email">Adresse e-mail</label>
+                <input type="email" id="email" name="email" required placeholder="ex : admin@biblio.com">
+            </div>
+
+            <div class="form-group">
+                <label for="mot_de_passe">Mot de passe</label>
+                <input type="password" id="mot_de_passe" name="mot_de_passe" required placeholder="Votre mot de passe">
+            </div>
+
+            <button type="submit" class="btn-login">Se connecter</button>
+        </form>
+
+        <div class="test-info">
+            <strong>Identifiants de test</strong><br>
+            Email : <code>admin@biblio.com</code><br>
+            Mot de passe : <code>password</code>
+        </div>
+    </div>
 </body>
 </html>
