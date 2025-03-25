@@ -4,7 +4,7 @@ import sqlite3
 connection = sqlite3.connect('bibliotheque.db')
 
 # Lecture et exécution du fichier SQL dédié aux livres et emprunts
-with open('schema_bibliotheque.sql') as f:
+with open('schema.sql') as f:
     connection.executescript(f.read())
 
 cur = connection.cursor()
