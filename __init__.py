@@ -36,7 +36,7 @@ def dashboard():
         return redirect(url_for('authentification'))
     return render_template('dashboard.html', role=session['role'])
 
-@app.route('/afficher_livres')
+@app.route('/livres')
 def livres():
     conn = get_db_connection()
     livres = conn.execute('SELECT * FROM livres').fetchall()
